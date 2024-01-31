@@ -1,15 +1,15 @@
-const express = require("express"); 
+const express = require("express");
+const mysql = require("mysql"); 
+const cors = require('cors')
 const app = express();
 const PORT = 8080;
-const mysql = require("mysql");
-const cors = require('cors')
 const bodyParser = require('body-parser')
 
 const db = mysql.createConnection({
   user: "root",
-  host: "127.0.0.1", 
-  password: "1234",
-  database: "usersdata"
+  host: "localhost", 
+  password: "",
+  database: "signinemployee"
 });
 
 app.use(cors())
@@ -20,10 +20,17 @@ app.get("/", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body)
-  res.send(JSON.stringify(req.body))
-});
-
-app.listen(PORT, () => {
-  console.log("Server is running");
-});
+  const sql = "SELECT * FROM login WHERE username = ? AND password = ?";
+  const values = [
+   req.body.username,  
+   req.body.password
+  ];
+ 
+  db.query(sql, values, (err, data) => {
+   if (err) {
+     return res.json("Login Failed");
+   }
+   return res.json(data);
+  });
+ });
+ 
